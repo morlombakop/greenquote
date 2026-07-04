@@ -1,0 +1,36 @@
+datasource db {
+  provider = "sqlite"
+  // url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("USER")
+  quotes    Quote[]
+  createdAt DateTime @default(now())
+}
+
+model Quote {
+  id                    String   @id @default(uuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName              String
+  email                 String
+  address               String
+  monthlyConsumptionKwh Float
+  systemSizeKw          Float
+  downPayment           Float    @default(0)
+  systemPrice           Float
+  principalAmount       Float
+  riskBand              String
+  offers                String   
+  createdAt             DateTime @default(now())
+}
