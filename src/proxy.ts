@@ -6,7 +6,7 @@ export default withAuth(
     const token = req.nextauth.token;
     const isGoingToAdminPage = req.nextUrl.pathname.startsWith("/admin");
 
-    // Block non-admin users attempting to view the total records portal[cite: 1]
+    // Block non-admin users attempting to view the total records portal
     if (isGoingToAdminPage && token?.role !== "ADMIN") {
       return NextResponse.rewrite(new URL("/unauthorized", req.url));
     }
@@ -19,7 +19,9 @@ export default withAuth(
   }
 );
 
-// Define which specific routes are fully protected behind authorization rules[cite: 1]
+// Define which specific routes are fully protected behind authorization rules
 export const config = {
-  matcher: ["/quotes/:path*", "/admin/:path*"], // Matches standard and admin dashboards[cite: 1]
+  // Matches standard and admin dashboards
+  matcher: ["/quotes/:path*", "/admin/:path*"], 
 };
+
