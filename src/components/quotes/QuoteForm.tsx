@@ -2,12 +2,12 @@
 
 import { type QuoteInput, quoteSchema } from "@/lib/validations/quote";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 interface QuoteFormProps {
-  initialData?: QuoteInput;
-  onSubmit: (values: QuoteInput) => Promise<void>;
+  initialData: QuoteInput;
   submitButtonText?: string;
   submitButtonLoadingText?: string;
 }
@@ -17,12 +17,12 @@ const PRICE_PER_KW = 1500;
 
 export function QuoteForm({
   initialData,
-  onSubmit,
   submitButtonText = "Submit & Generate Proposals",
   submitButtonLoadingText = "Running Underwriting Engine...",
 }: QuoteFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -31,13 +31,7 @@ export function QuoteForm({
     formState: { errors },
   } = useForm<QuoteInput>({
     resolver: zodResolver(quoteSchema),
-    defaultValues: initialData ?? {
-      fullName: "",
-      email: "",
-      address: "",
-      monthlyConsumptionKwh: 0,
-      downPayment: 0,
-    },
+    defaultValues: initialData,
   });
 
   const monthlyConsumption =
@@ -49,11 +43,29 @@ export function QuoteForm({
   const derivedSystemPrice = derivedSystemSizeKw * PRICE_PER_KW;
   const derivedPrincipalAmount = Math.max(0, derivedSystemPrice - downPayment);
 
+    const handleCreateQuote = async (values: QuoteInput) => {
+      const response = await fetch("/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to process quote configurations.");
+      }
+  
+      return data.quote.id;
+    };
+
   const handleFormSubmit = async (values: QuoteInput) => {
     setIsLoading(true);
     setServerError(null);
     try {
-      await onSubmit(values);
+      const quoteId = await handleCreateQuote(values);
+      router.push(`/quotes/${quoteId}`);
+      router.refresh();
     } catch (err) {
       const e = err as { message?: string };
       setServerError(e.message || "An unexpected error occurred.");
@@ -62,13 +74,8 @@ export function QuoteForm({
     }
   };
 
-  // const onSubmit1 = (data: unknown) => console.log("Success: *******", data);
-  // const onError = (errors: unknown) =>
-  //   console.log("Validation Errors:", errors);
-
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
-    {/* <form onSubmit={handleSubmit(onSubmit1, onError)} className="space-y-8"> */}
       {serverError && (
         <div className="rounded-md bg-red-50 p-4 border border-red-200">
           <p className="text-sm font-medium text-red-800">{serverError}</p>
