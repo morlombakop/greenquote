@@ -40,10 +40,12 @@ export function QuoteForm({
     },
   });
 
-  const monthlyConsumption = useWatch({ control, name: "monthlyConsumptionKwh" }) || 0;
+  const monthlyConsumption =
+    useWatch({ control, name: "monthlyConsumptionKwh" }) || 0;
   const downPayment = useWatch({ control, name: "downPayment" }) || 0;
 
-  const derivedSystemSizeKw = (monthlyConsumption * 12) / 1000 * SOLAR_IRRADIANCE_FACTOR;
+  const derivedSystemSizeKw =
+    ((monthlyConsumption * 12) / 1000) * SOLAR_IRRADIANCE_FACTOR;
   const derivedSystemPrice = derivedSystemSizeKw * PRICE_PER_KW;
   const derivedPrincipalAmount = Math.max(0, derivedSystemPrice - downPayment);
 
@@ -53,15 +55,20 @@ export function QuoteForm({
     try {
       await onSubmit(values);
     } catch (err) {
-        const e = err as { message?: string };
+      const e = err as { message?: string };
       setServerError(e.message || "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // const onSubmit1 = (data: unknown) => console.log("Success: *******", data);
+  // const onError = (errors: unknown) =>
+  //   console.log("Validation Errors:", errors);
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+    {/* <form onSubmit={handleSubmit(onSubmit1, onError)} className="space-y-8"> */}
       {serverError && (
         <div className="rounded-md bg-red-50 p-4 border border-red-200">
           <p className="text-sm font-medium text-red-800">{serverError}</p>
@@ -71,97 +78,172 @@ export function QuoteForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* LEFT COLUMN: Inputs */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Client Information</h3>
-          
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+            Client Information
+          </h3>
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name
+            </label>
             <input
               type="text"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
-                errors.fullName ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                errors.fullName
+                  ? "border-red-500 ring-1 ring-red-500"
+                  : "border-gray-300"
               }`}
               placeholder="Jane Doe"
               {...register("fullName")}
             />
-            {errors.fullName && <p className="mt-1 text-xs font-medium text-red-600">{errors.fullName.message}</p>}
+            {errors.fullName && (
+              <p className="mt-1 text-xs font-medium text-red-600">
+                {errors.fullName.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
             <input
               type="email"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
-                errors.email ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                errors.email
+                  ? "border-red-500 ring-1 ring-red-500"
+                  : "border-gray-300"
               }`}
               placeholder="jane.doe@domain.de"
               {...register("email")}
             />
-            {errors.email && <p className="mt-1 text-xs font-medium text-red-600">{errors.email.message}</p>}
+            {errors.email && (
+              <p className="mt-1 text-xs font-medium text-red-600">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Installation Site Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Installation Site Address
+            </label>
             <input
               type="text"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
-                errors.address ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
+                errors.address
+                  ? "border-red-500 ring-1 ring-red-500"
+                  : "border-gray-300"
               }`}
               placeholder="Müllerstraße 42, 13353 Berlin"
               {...register("address")}
             />
-            {errors.address && <p className="mt-1 text-xs font-medium text-red-600">{errors.address.message}</p>}
+            {errors.address && (
+              <p className="mt-1 text-xs font-medium text-red-600">
+                {errors.address.message}
+              </p>
+            )}
           </div>
 
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 pt-2">Technical & Financial</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 pt-2">
+            Technical & Financial
+          </h3>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Usage (kWh/mo)</label>
-              <input
-                type="number"
-                className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
-                  errors.monthlyConsumptionKwh ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
-                }`}
-                placeholder="350"
-                {...register("monthlyConsumptionKwh", { valueAsNumber: true })}
-              />
-              {errors.monthlyConsumptionKwh && <p className="mt-1 text-xs font-medium text-red-600">{errors.monthlyConsumptionKwh.message}</p>}
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Usage (kWh/mo)
+            </label>
+            <input
+              type="number"
+              className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
+                errors.monthlyConsumptionKwh
+                  ? "border-red-500 ring-1 ring-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder="350"
+              {...register("monthlyConsumptionKwh", { valueAsNumber: true })}
+            />
+            {errors.monthlyConsumptionKwh && (
+              <p className="mt-1 text-xs font-medium text-red-600">
+                {errors.monthlyConsumptionKwh.message}
+              </p>
+            )}
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Down Payment (€)</label>
-              <input
-                type="number"
-                className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
-                  errors.downPayment ? "border-red-500 ring-1 ring-red-500" : "border-gray-300"
-                }`}
-                placeholder="2000"
-                {...register("downPayment", { valueAsNumber: true })}
-              />
-              {errors.downPayment && <p className="mt-1 text-xs font-medium text-red-600">{errors.downPayment.message}</p>}
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              System Size (Kw)
+            </label>
+            <input
+              type="number"
+              className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
+                errors.systemSizeKw
+                  ? "border-red-500 ring-1 ring-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder="2000"
+              {...register("systemSizeKw", { valueAsNumber: true })}
+            />
+            {errors.systemSizeKw && (
+              <p className="mt-1 text-xs font-medium text-red-600">
+                {errors.systemSizeKw.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Down Payment (€)
+            </label>
+            <input
+              type="number"
+              className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
+                errors.downPayment
+                  ? "border-red-500 ring-1 ring-red-500"
+                  : "border-gray-300"
+              }`}
+              placeholder="2000"
+              {...register("downPayment", { valueAsNumber: true })}
+            />
+            {errors.downPayment && (
+              <p className="mt-1 text-xs font-medium text-red-600">
+                {errors.downPayment.message}
+              </p>
+            )}
           </div>
         </div>
 
         {/* RIGHT COLUMN: Live Sidebar Estimates */}
         <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 flex flex-col justify-between">
           <div>
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">Live Estimates</h3>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
+              Live Estimates
+            </h3>
             <div className="space-y-4 text-sm">
               <div className="flex justify-between items-center pb-3 border-b border-gray-200">
                 <span className="text-gray-600">Calculated Size:</span>
-                <span className="font-bold text-gray-900">{derivedSystemSizeKw.toFixed(2)} kWp</span>
+                <span className="font-bold text-gray-900">
+                  {derivedSystemSizeKw.toFixed(2)} kWp
+                </span>
               </div>
               <div className="flex justify-between items-center pb-3 border-b border-gray-200">
                 <span className="text-gray-600">Base Pricing:</span>
                 <span className="font-bold text-gray-900">
-                  €{derivedSystemPrice.toLocaleString("de-DE", { minimumFractionDigits: 2 })}
+                  €
+                  {derivedSystemPrice.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                  })}
                 </span>
               </div>
               <div className="flex justify-between items-center pt-2">
-                <span className="text-gray-600 font-medium">Financing Principal:</span>
+                <span className="text-gray-600 font-medium">
+                  Financing Principal:
+                </span>
                 <span className="font-black text-green-600 text-xl tracking-tight">
-                  €{derivedPrincipalAmount.toLocaleString("de-DE", { minimumFractionDigits: 2 })}
+                  €
+                  {derivedPrincipalAmount.toLocaleString("de-DE", {
+                    minimumFractionDigits: 2,
+                  })}
                 </span>
               </div>
             </div>

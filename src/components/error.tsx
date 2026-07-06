@@ -1,4 +1,4 @@
-"use client"; // Error components must be Client Components
+"use client";
 
 import { useEffect } from "react";
 
@@ -10,7 +10,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // 🚀 Send the error to your logging API or an external service here
+    // Send the error to your logging API or an external service here
     console.error("Client-side crash caught:", error);
   }, [error]);
 
