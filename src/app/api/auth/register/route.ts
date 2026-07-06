@@ -1,19 +1,15 @@
 import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { registrationSchema } from "@/lib/validations/registration";
 import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
-const registerSchema = z.object({
-  fullName: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const validation = registerSchema.safeParse(body);
+    const validation = registrationSchema.safeParse(body);
 
     if (!validation.success) {
       const fieldErrors = validation.error.flatten().fieldErrors;

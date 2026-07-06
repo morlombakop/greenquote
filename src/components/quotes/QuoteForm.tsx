@@ -1,29 +1,13 @@
 "use client";
 
+import { type QuoteInput, quoteSchema } from "@/lib/validations/quote";
+import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-
-// Check and compare with validation quote
-const quoteSchema = z.object({
-  fullName: z.string().min(2, "Full client name is required"),
-  email: z.string().email("Please provide a valid contact email"),
-  address: z.string().min(5, "Complete physical address is required"),
-  monthlyConsumptionKwh: z
-    .number()
-    .min(50, "Minimum monthly demand is 50 kWh")
-    .max(10000, "Commercial installations past 10,000 kWh, contact support"),
-  downPayment: z
-    .number()
-    .min(0, "Down payment cannot drop below zero"),
-});
-
-export type QuoteFormData = z.infer<typeof quoteSchema>;
 
 interface QuoteFormProps {
-  initialData?: QuoteFormData;
-  onSubmit: (values: QuoteFormData) => Promise<void>;
+  initialData?: QuoteInput;
+  onSubmit: (values: QuoteInput) => Promise<void>;
   submitButtonText?: string;
   submitButtonLoadingText?: string;
 }
@@ -45,7 +29,7 @@ export function QuoteForm({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<QuoteFormData>({
+  } = useForm<QuoteInput>({
     resolver: zodResolver(quoteSchema),
     defaultValues: initialData ?? {
       fullName: "",
@@ -63,7 +47,7 @@ export function QuoteForm({
   const derivedSystemPrice = derivedSystemSizeKw * PRICE_PER_KW;
   const derivedPrincipalAmount = Math.max(0, derivedSystemPrice - downPayment);
 
-  const handleFormSubmit = async (values: QuoteFormData) => {
+  const handleFormSubmit = async (values: QuoteInput) => {
     setIsLoading(true);
     setServerError(null);
     try {

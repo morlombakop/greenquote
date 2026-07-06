@@ -21,7 +21,7 @@ CREATE TABLE "Quote" (
     "systemPrice" REAL NOT NULL,
     "principalAmount" REAL NOT NULL,
     "riskBand" TEXT NOT NULL,
-    "offers" TEXT NOT NULL,
+    "offers" JSONB NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "Quote_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );

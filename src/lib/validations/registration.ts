@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const registerSchema = z
+export const registrationSchema = z
   .object({
     fullName: z.string().min(2, "Name must be at least 2 characters long"),
     email: z.string().email("Please provide a valid email address"),
@@ -12,4 +12,4 @@ export const registerSchema = z
     path: ["confirmPassword"],
   });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
+export type RegistrationInput = z.infer<typeof registrationSchema>;

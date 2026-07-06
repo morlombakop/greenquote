@@ -15,10 +15,9 @@ if (process.env.NODE_ENV === "production") {
   const adapter = new PrismaPg(pool);
   prismaInstance = new PrismaClient({ adapter });
 } else {
-  // 2. Local Dev & Test Mode: Pass the string path object directly into the adapter 🚀
+  // 2. Local Dev & Test Mode: Pass the string path object directly into the adapter
   const adapter = new PrismaBetterSqlite3({
-    // url: "file:./prisma/dev.db"
-    url: "file:./dev.db",
+    url: "file:./prisma/dev.db",
   });
 
   prismaInstance = new PrismaClient({ adapter });

@@ -1,23 +1,12 @@
-import { QuoteInput } from "@/lib/validations/quote";
-
-export interface InstallmentOffer {
-  termYears: number;
-  apr: number;
-  principalUsed: number;
-  monthlyPayment: number;
-}
-
-type RiskBand = "A" | "B" | "C";
-
-export interface CalculatedQuoteSummary {
-  systemPrice: number;
-  principalAmount: number;
-  riskBand: RiskBand;
-  offers: InstallmentOffer[];
-}
+import { QuoteInput } from "../validations/quote";
+import type {
+  CalculatedQuoteSummary,
+  InstallmentOffer,
+  RiskBand,
+} from "./types";
 
 /**
- * Calculates system pricing, evaluates risk bands, and generates standard 
+ * Calculates system pricing, evaluates risk bands, and generates standard
  * amortization schedules for residential solar finance applications.
  */
 export function calculateQuote(input: QuoteInput): CalculatedQuoteSummary {
@@ -35,7 +24,7 @@ export function calculateQuote(input: QuoteInput): CalculatedQuoteSummary {
   // - C: otherwise (APR: 11.9%)
   let riskBand: RiskBand = "C";
   let apr = 11.9;
-  const consumptionKwh = Number(input.monthlyConsumptionKwh )
+  const consumptionKwh = Number(input.monthlyConsumptionKwh);
 
   if (consumptionKwh >= 400 && systemSizeKw <= 6) {
     riskBand = "A";
@@ -52,12 +41,12 @@ export function calculateQuote(input: QuoteInput): CalculatedQuoteSummary {
     let monthlyPayment = 0;
 
     if (principalAmount > 0) {
-      const monthlyRate = (apr / 100) / 12;
-      
+      const monthlyRate = apr / 100 / 12;
+
       // Standard Amortization Formula: P * [r(1+r)^n] / [(1+r)^n - 1]
-      monthlyPayment = 
-        principalAmount * 
-        (monthlyRate * Math.pow(1 + monthlyRate, totalPayments)) / 
+      monthlyPayment =
+        (principalAmount *
+          (monthlyRate * Math.pow(1 + monthlyRate, totalPayments))) /
         (Math.pow(1 + monthlyRate, totalPayments) - 1);
     }
 

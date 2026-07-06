@@ -1,6 +1,5 @@
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -31,6 +30,6 @@ model Quote {
   systemPrice           Float
   principalAmount       Float
   riskBand              String
-  offers                String   
+  offers                Json  
   createdAt             DateTime @default(now())
 }

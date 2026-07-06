@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { type RegisterInput, registerSchema } from './validation';
+import { registrationSchema, type RegistrationInput } from "@/lib/validations/registration";
 
 
 export function RegisterForm() {
@@ -18,8 +18,8 @@ export function RegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterInput>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<RegistrationInput>({
+    resolver: zodResolver(registrationSchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -28,7 +28,7 @@ export function RegisterForm() {
     },
   });
 
-  const onSubmit = async (values: RegisterInput) => {
+  const onSubmit = async (values: RegistrationInput) => {
     setIsLoading(true);
     setServerError(null);
 
@@ -40,12 +40,14 @@ export function RegisterForm() {
           fullName: values.fullName,
           email: values.email,
           password: values.password,
+          confirmPassword: values.confirmPassword
         }),
       });
 
       const data = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(data.error || "An unexpected error occurred.");
+      }
 
       router.push("/login?registered=true");
     } catch (err) {

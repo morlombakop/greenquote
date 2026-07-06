@@ -1,49 +1,81 @@
-import NextAuth, { AuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
-import { prisma } from "@/lib/prisma"; 
+import { prisma } from "@/lib/prisma";
+import { compare } from "bcrypt";
+import { logger } from "@/lib/logger"; // Mapped to your structured logger engine
+import { type Role } from "@/types/next-auth";
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 Days session lifecycle
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing credentials payload");
+          logger.warn({}, "Auth pipeline halted: Missing email or password strings.");
+          return null;
         }
 
-        // Fetch user records from your SQLite/Postgres database
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email }
-        });
+        // 🕵️‍♂️ Trace authentication intent safely (Context Object first, Message String second)
+        logger.info(
+          { email: credentials.email }, 
+          "NextAuth database user verification lookup matching identity."
+        );
 
-        if (!user) {
-          throw new Error("Invalid login credentials provided");
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
+
+          if (!user) {
+            logger.warn(
+              { email: credentials.email }, 
+              "Auth failed: Identity record not found in persistence layer."
+            );
+            return null;
+          }
+
+          const isPasswordValid = await compare(credentials.password, user.password);
+
+          if (!isPasswordValid) {
+            logger.warn(
+              { email: credentials.email }, 
+              "Auth failed: Invalid cryptographic password match."
+            );
+            return null;
+          }
+
+          logger.info(
+            { userId: user.id, role: user.role }, 
+            "User identity validated. Access Token generation initiated."
+          );
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role as unknown as Role,
+          };
+        } catch (error) {
+          if(error instanceof Error) {
+            logger.error(
+              { email: credentials.email, errorMessage: error.message, errorStack: error.stack }, 
+              "Critical crash inside credential authorizing runtime pipeline."
+            );
+          }
+          return null;
         }
-
-        // Compare the submitted password against the hashed database value
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
-        if (!isPasswordValid) {
-          throw new Error("Invalid login credentials provided");
-        }
-
-        const role = user.role === "ADMIN" ? "ADMIN" : "USER";
-
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role,
-        };
-      }
-    })
+      },
+    }),
   ],
   callbacks: {
-    // Inject the user role and ID directly into the encrypted JWT token
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -51,23 +83,31 @@ export const authOptions: AuthOptions = {
       }
       return token;
     },
-    // Make the role and ID properties accessible to frontend components and server hooks
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
       }
       return session;
-    }
+    },
   },
-  session: {
-    strategy: "jwt", // Cookie-based encrypted session tracking
-    maxAge: 24 * 60 * 60, // 1 Day session expiry
+
+  // Overriding internal framework logging to match our structural parameters schema
+  logger: {
+    error(code, metadata) {
+      logger.error({ frameworkCode: code, internalMeta: metadata }, "NextAuth Framework Core Error caught.");
+    },
+    warn(code) {
+      logger.warn({ frameworkCode: code }, "NextAuth Framework Core Warning triggered.");
+    },
+    debug(code, metadata) {
+      logger.info({ frameworkCode: code, internalMeta: metadata }, "NextAuth Framework Diagnostic Trace recorded.");
+    },
   },
-  secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/login", // Custom sign-in landing point redirection
-  }
+    signIn: "/login",
+    error: "/login",
+  },
 };
 
 const handler = NextAuth(authOptions);
