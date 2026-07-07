@@ -3,20 +3,63 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import FilterBlock from "./components/FilterBlock";
+import KpiStats from "./components/KpiStats";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboardPage() {
-  // 1. Structural Security Gate: Authenticate and enforce strict ADMIN role check
+type PageProps = {
+  searchParams: Promise<{
+    search?: string;
+    userId?: string;
+  }>;
+}
+
+export default async function AdminDashboardPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
 
   if (!session || session.user.role !== "ADMIN") {
-    // Gracefully send unauthorized users back to their restricted dashboard views
     redirect("/quotes");
   }
 
-  // 2. Aggregate pipeline telemetry directly from the data layer
+  // Resolve search parameters for server-side filtering
+  const params = await searchParams;
+  const searchQuery = params.search || "";
+  const selectedUserId = params.userId || "";
+
+  const uniqueUsers = await prisma.user.findMany({
+    where: {
+      quotes: {
+        some: {},
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+    orderBy: { name: "asc" },
+  });
+
+  // Build dynamic Prisma query filters based on active search parameters
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const whereClause: any = {};
+
+  if (selectedUserId) {
+    whereClause.userId = selectedUserId;
+  }
+
+  if (searchQuery) {
+    whereClause.OR = [
+      { fullName: { contains: searchQuery } },
+      { email: { contains: searchQuery } },
+      { user: { name: { contains: searchQuery } } },
+      { user: { email: { contains: searchQuery } } },
+    ];
+  }
+
   const quotes = await prisma.quote.findMany({
+    where: whereClause,
     orderBy: { createdAt: "desc" },
     include: {
       user: {
@@ -28,20 +71,19 @@ export default async function AdminDashboardPage() {
     },
   });
 
-  // 3. Mathematical summary reductions for KPI stats cards
+  // Mathematical summary reductions for KPI stats cards
   const totalVolume = quotes.length;
   const totalPipelineValue = quotes.reduce((acc, q) => acc + q.systemPrice, 0);
-  const totalFinancedValue = quotes.reduce(
-    (acc, q) => acc + q.principalAmount,
-    0,
-  );
+  const totalFinancedValue = quotes.reduce((acc, q) => acc + q.principalAmount, 0);
 
-  const riskDistribution = quotes.reduce(
+ const riskDistribution = quotes.reduce(
     (acc, q) => {
-      acc[q.riskBand] = (acc[q.riskBand] || 0) + 1;
+      if (q.riskBand === "A" || q.riskBand === "B" || q.riskBand === "C") {
+        acc[q.riskBand] = (acc[q.riskBand] || 0) + 1;
+      }
       return acc;
     },
-    { A: 0, B: 0, C: 0 } as Record<string, number>,
+    { A: 0, B: 0, C: 0 } as { A: number; B: number; C: number }
   );
 
   return (
@@ -54,8 +96,7 @@ export default async function AdminDashboardPage() {
               Admin Control Center
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Global system monitoring, credit risks metrics, and generated
-              quote infrastructure audits.
+              Global system monitoring, credit risks metrics, and generated quote infrastructure audits.
             </p>
           </div>
           <a
@@ -66,62 +107,18 @@ export default async function AdminDashboardPage() {
           </a>
         </div>
 
-        {/* 🚀 KPI TELEMETRY SUMMARY CARDS BAR */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {/* Total Quotes Card */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Total Active Requests
-            </p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">
-              {totalVolume}
-            </p>
-          </div>
+        <KpiStats
+          totalVolume={totalVolume}
+          totalPipelineValue={totalPipelineValue}
+          totalFinancedValue={totalFinancedValue}
+          riskDistribution={riskDistribution}
+        />
 
-          {/* Pipeline Asset Valuation */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Gross Contract Value
-            </p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">
-              €
-              {totalPipelineValue.toLocaleString("de-DE", {
-                maximumFractionDigits: 0,
-              })}
-            </p>
-          </div>
-
-          {/* Financed Volume Summary */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Total Portfolio Financing
-            </p>
-            <p className="mt-2 text-3xl font-bold text-green-600">
-              €
-              {totalFinancedValue.toLocaleString("de-DE", {
-                maximumFractionDigits: 0,
-              })}
-            </p>
-          </div>
-
-          {/* Risk Allocation Portfolio Matrix */}
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Risk Band Demographics
-            </p>
-            <div className="mt-3 flex items-center gap-2 text-xs font-bold">
-              <span className="bg-green-100 text-green-800 px-2 py-1 rounded">
-                A: {riskDistribution.A}
-              </span>
-              <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
-                B: {riskDistribution.B}
-              </span>
-              <span className="bg-red-100 text-red-800 px-2 py-1 rounded">
-                C: {riskDistribution.C}
-              </span>
-            </div>
-          </div>
-        </div>
+        <FilterBlock
+          searchQuery={searchQuery}
+          selectedUserId={selectedUserId}
+          uniqueUsers={uniqueUsers}
+        />
 
         {/* Audit Pipeline Tracking Grid */}
         <div className="bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden">
@@ -133,7 +130,7 @@ export default async function AdminDashboardPage() {
 
           {quotes.length === 0 ? (
             <div className="p-12 text-center text-sm text-gray-500">
-              No portfolio database records logged yet.
+              No portfolio database records found matching the active criteria.
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -162,31 +159,15 @@ export default async function AdminDashboardPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 text-sm">
                   {quotes.map((quote) => (
-                    <tr
-                      key={quote.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      {/* Account Manager/Sales Partner Info */}
+                    <tr key={quote.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-semibold text-gray-900">
-                          {quote.user.name}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {quote.user.email}
-                        </div>
+                        <div className="font-semibold text-gray-900">{quote.user.name}</div>
+                        <div className="text-xs text-gray-500">{quote.user.email}</div>
                       </td>
-
-                      {/* Customer Details */}
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-900 font-medium">
-                          {quote.fullName}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {quote.email}
-                        </div>
+                        <div className="text-gray-900 font-medium">{quote.fullName}</div>
+                        <div className="text-xs text-gray-500">{quote.email}</div>
                       </td>
-
-                      {/* Technical Hardware Metrics */}
                       <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
                         <span className="font-semibold text-gray-900">
                           {quote.systemSizeKw.toFixed(1)} kWp
@@ -196,16 +177,12 @@ export default async function AdminDashboardPage() {
                           {quote.monthlyConsumptionKwh} kWh / month demand
                         </div>
                       </td>
-
-                      {/* Financial Value Mapping */}
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                         €
                         {quote.principalAmount.toLocaleString("de-DE", {
                           minimumFractionDigits: 2,
                         })}
                       </td>
-
-                      {/* Risk Status Band */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -219,8 +196,6 @@ export default async function AdminDashboardPage() {
                           Risk Band {quote.riskBand}
                         </span>
                       </td>
-
-                      {/* Detailed Audit Link Trigger */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a
                           href={`/quotes/${quote.id}`}

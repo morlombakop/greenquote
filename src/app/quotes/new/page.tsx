@@ -1,4 +1,4 @@
-import { QuoteForm } from "@/components/quotes/QuoteForm";
+import { QuoteForm } from "@/app/quotes/components/QuoteForm";
 import { prisma } from "@/lib/prisma";
 import { type QuoteInput } from "@/lib/validations/quote";
 import { getServerSession } from "next-auth";

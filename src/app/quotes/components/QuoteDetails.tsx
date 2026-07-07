@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { InstallmentOffer } from "@/lib/utils/types";
 
-interface QuoteResultsClientProps {
+type QuoteResultsClientProps = {
   quote: {
     riskBand: string;
     fullName: string;

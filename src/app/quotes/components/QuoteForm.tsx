@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-interface QuoteFormProps {
+type QuoteFormProps = {
   initialData: QuoteInput;
   submitButtonText?: string;
   submitButtonLoadingText?: string;

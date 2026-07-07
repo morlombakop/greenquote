@@ -1,4 +1,4 @@
-import QuoteDetails from "@/components/quotes/QuoteDetails";
+import QuoteDetails from "@/app/quotes/components/QuoteDetails";
 import logger from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { type InstallmentOffer } from "@/lib/utils/types";
