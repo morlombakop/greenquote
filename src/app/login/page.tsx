@@ -118,6 +118,7 @@ export default function LoginPage() {
               </label>
               <input
                 type="email"
+                data-testid="login-input-email"
                 className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.email
                     ? "border-red-500 ring-1 ring-red-500"
@@ -139,6 +140,7 @@ export default function LoginPage() {
               </label>
               <input
                 type="password"
+                data-testid="login-input-password"
                 className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.password
                     ? "border-red-500 ring-1 ring-red-500"
@@ -158,6 +160,7 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
+              data-testid="login-button-submit"
               disabled={isLoading}
               className="group relative flex w-full justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 transition-colors shadow-sm"
             >
@@ -168,6 +171,7 @@ export default function LoginPage() {
           <div className="text-center text-sm">
             <Link
               href="/register"
+              data-testid="login-link-register"
               className="font-medium text-green-600 hover:text-green-500"
             >
               Don&apos;t have an account yet? Register here

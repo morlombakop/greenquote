@@ -84,6 +84,7 @@ export function RegisterForm() {
           </label>
           <input
             type="text"
+            data-testid="register-input-full-name"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.fullName
                 ? "border-red-500 ring-1 ring-red-500"
@@ -106,6 +107,7 @@ export function RegisterForm() {
           </label>
           <input
             type="email"
+            data-testid="register-input-email"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.email
                 ? "border-red-500 ring-1 ring-red-500"
@@ -128,6 +130,7 @@ export function RegisterForm() {
           </label>
           <input
             type="password"
+            data-testid="register-input-password"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.password
                 ? "border-red-500 ring-1 ring-red-500"
@@ -150,6 +153,7 @@ export function RegisterForm() {
           </label>
           <input
             type="password"
+             data-testid="register-input-confirm-password"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.confirmPassword
                 ? "border-red-500 ring-1 ring-red-500"
@@ -168,6 +172,7 @@ export function RegisterForm() {
 
       <button
         type="submit"
+        data-testid="register-button-submit"
         disabled={isLoading}
         className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
       >
@@ -177,6 +182,7 @@ export function RegisterForm() {
       <div className="text-center text-sm">
         <Link
           href="/login"
+          data-testid="register-link-login"
           className="font-medium text-green-600 hover:text-green-500"
         >
           Already have an account? Sign in
