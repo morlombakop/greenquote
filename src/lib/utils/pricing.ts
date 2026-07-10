@@ -2,15 +2,16 @@ import type {
   CalculatedQuoteSummary,
   InstallmentOffer,
   RiskBand,
-  CalculateQuoteInput
-} from "./types";
-
+  CalculateQuoteInput,
+} from './types';
 
 /**
  * Calculates system pricing, evaluates risk bands, and generates standard
  * amortization schedules for residential solar finance applications.
  */
-export function calculateQuote(input: CalculateQuoteInput): CalculatedQuoteSummary {
+export function calculateQuote(
+  input: CalculateQuoteInput
+): CalculatedQuoteSummary {
   // 1. System price: systemSizeKw * 1200 (Sticking to Euros)
   const systemPrice = Number(input.systemSizeKw) * 1200;
   const systemSizeKw = Number(input.systemSizeKw);
@@ -23,15 +24,15 @@ export function calculateQuote(input: CalculateQuoteInput): CalculatedQuoteSumma
   // - A: consumption >= 400 AND systemSize <= 6 (APR: 6.9%)
   // - B: otherwise if consumption >= 250 (APR: 8.9%)
   // - C: otherwise (APR: 11.9%)
-  let riskBand: RiskBand = "C";
+  let riskBand: RiskBand = 'C';
   let apr = 11.9;
   const consumptionKwh = Number(input.monthlyConsumptionKwh);
 
   if (consumptionKwh >= 400 && systemSizeKw <= 6) {
-    riskBand = "A";
+    riskBand = 'A';
     apr = 6.9;
   } else if (consumptionKwh >= 250) {
-    riskBand = "B";
+    riskBand = 'B';
     apr = 8.9;
   }
 

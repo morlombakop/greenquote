@@ -13,7 +13,8 @@
     "build": "cross-env NODE_ENV=production prisma generate && next build",
     "db:migrate:dev": "cross-env NODE_ENV=development prisma migrate dev --name init",
     "db:migrate:prod": "cross-env NODE_ENV=production prisma migrate deploy",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "prepare": "husky"
   },
   "prisma": {
     "seed": "ts-node --compilerOptions {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -51,12 +52,25 @@
     "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "lint-staged": "^17.0.8",
+    "prettier": "^3.9.5",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.0",
     "typescript": "^5",
     "vitest": "^4.1.9"
+  },
+  "lint-staged": {
+    "*.{js,mjs,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,scss}": [
+      "prettier --write"
+    ]
   }
 }

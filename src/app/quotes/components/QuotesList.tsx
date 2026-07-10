@@ -1,11 +1,11 @@
-import { type Quote } from "@/types/quote";
-import Link from "next/link";
-import React from "react";
+import { type Quote } from '@/types/quote';
+import Link from 'next/link';
+import React from 'react';
 
 type QuotesListProps = {
   quotes: Quote[];
   isAdmin: boolean;
-}
+};
 
 export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
   return (
@@ -14,12 +14,14 @@ export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 pb-5 mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            {isAdmin ? "Admin Console: All Pipeline Quotes" : "Your Solar Quotes"}
+            {isAdmin
+              ? 'Admin Console: All Pipeline Quotes'
+              : 'Your Solar Quotes'}
           </h1>
           <p className="mt-2 text-sm text-gray-600">
             {isAdmin
               ? `Reviewing ${quotes.length} aggregate offers currently logged across the platform.`
-              : "Manage and inspect your calculated installation and payment options."}
+              : 'Manage and inspect your calculated installation and payment options.'}
           </p>
         </div>
         <div className="flex gap-3">
@@ -87,7 +89,7 @@ export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
                   )}
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Client Target
-                    </th>
+                  </th>
                   <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     System Parameters
                   </th>
@@ -107,12 +109,19 @@ export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 text-sm text-gray-900">
                 {quotes.map((quote) => (
-                  <tr key={quote.id} className="hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={quote.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     {/* Admin-only view info */}
                     {isAdmin && (
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{quote.user.name}</div>
-                        <div className="text-xs text-gray-500">{quote.user.email}</div>
+                        <div className="font-medium text-gray-900">
+                          {quote.user.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {quote.user.email}
+                        </div>
                       </td>
                     )}
 
@@ -133,7 +142,7 @@ export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
                     {/* Pricing Values */}
                     <td className="px-6 py-4 whitespace-nowrap font-medium">
                       €
-                      {quote.principalAmount.toLocaleString("de-DE", {
+                      {quote.principalAmount.toLocaleString('de-DE', {
                         minimumFractionDigits: 2,
                       })}
                     </td>
@@ -142,11 +151,11 @@ export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          quote.riskBand === "A"
-                            ? "bg-green-100 text-green-800"
-                            : quote.riskBand === "B"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
+                          quote.riskBand === 'A'
+                            ? 'bg-green-100 text-green-800'
+                            : quote.riskBand === 'B'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
                         }`}
                       >
                         Band {quote.riskBand}
@@ -155,10 +164,10 @@ export default function QuotesList({ quotes, isAdmin }: QuotesListProps) {
 
                     {/* Formatting creation timestamps */}
                     <td className="px-6 py-4 whitespace-nowrap text-gray-500 text-xs">
-                      {new Date(quote.createdAt).toLocaleDateString("de-DE", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
+                      {new Date(quote.createdAt).toLocaleDateString('de-DE', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
                       })}
                     </td>
 

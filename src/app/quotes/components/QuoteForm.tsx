@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { calculateQuote } from "@/lib/utils/pricing";
-import { type QuoteInput, quoteSchema } from "@/lib/validations/quote";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import React, { useMemo, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
-import { QuoteResults } from "./QuoteResult";
+import { calculateQuote } from '@/lib/utils/pricing';
+import { type QuoteInput, quoteSchema } from '@/lib/validations/quote';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import React, { useMemo, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
+import { QuoteResults } from './QuoteResult';
 
 type QuoteFormProps = {
   initialData: QuoteInput;
@@ -16,8 +16,8 @@ type QuoteFormProps = {
 
 export function QuoteForm({
   initialData,
-  submitButtonText = "Submit & Generate Proposals",
-  submitButtonLoadingText = "Running Underwriting Engine...",
+  submitButtonText = 'Submit & Generate Proposals',
+  submitButtonLoadingText = 'Running Underwriting Engine...',
 }: QuoteFormProps) {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,25 +34,25 @@ export function QuoteForm({
   });
 
   const monthlyConsumptionKwh =
-    useWatch({ control, name: "monthlyConsumptionKwh" }) || 0;
-  const downPayment = useWatch({ control, name: "downPayment" }) || 0;
-  const systemSizeKw = useWatch({ control, name: "systemSizeKw" }) || 0;
+    useWatch({ control, name: 'monthlyConsumptionKwh' }) || 0;
+  const downPayment = useWatch({ control, name: 'downPayment' }) || 0;
+  const systemSizeKw = useWatch({ control, name: 'systemSizeKw' }) || 0;
 
   const quoteSummary = useMemo(() => {
     return calculateQuote({ monthlyConsumptionKwh, downPayment, systemSizeKw });
   }, [monthlyConsumptionKwh, downPayment, systemSizeKw]);
 
   const handleCreateQuote = async (values: QuoteInput) => {
-    const response = await fetch("/api/quotes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('/api/quotes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(values),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "Failed to process quote configurations.");
+      throw new Error(data.error || 'Failed to process quote configurations.');
     }
 
     return data.quote.id;
@@ -67,7 +67,7 @@ export function QuoteForm({
       router.refresh();
     } catch (err) {
       const e = err as { message?: string };
-      setServerError(e.message || "An unexpected error occurred.");
+      setServerError(e.message || 'An unexpected error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -101,11 +101,11 @@ export function QuoteForm({
               data-testid="new-quote-input-full-name"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.fullName
-                  ? "border-red-500 ring-1 ring-red-500"
-                  : "border-gray-300"
+                  ? 'border-red-500 ring-1 ring-red-500'
+                  : 'border-gray-300'
               }`}
               placeholder="Jane Doe"
-              {...register("fullName")}
+              {...register('fullName')}
             />
             {errors.fullName && (
               <p className="mt-1 text-xs font-medium text-red-600">
@@ -123,11 +123,11 @@ export function QuoteForm({
               data-testid="new-quote-input-email"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.email
-                  ? "border-red-500 ring-1 ring-red-500"
-                  : "border-gray-300"
+                  ? 'border-red-500 ring-1 ring-red-500'
+                  : 'border-gray-300'
               }`}
               placeholder="jane.doe@domain.de"
-              {...register("email")}
+              {...register('email')}
             />
             {errors.email && (
               <p className="mt-1 text-xs font-medium text-red-600">
@@ -145,11 +145,11 @@ export function QuoteForm({
               data-testid="new-quote-input-address"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.address
-                  ? "border-red-500 ring-1 ring-red-500"
-                  : "border-gray-300"
+                  ? 'border-red-500 ring-1 ring-red-500'
+                  : 'border-gray-300'
               }`}
               placeholder="Müllerstraße 42, 13353 Berlin"
-              {...register("address")}
+              {...register('address')}
             />
             {errors.address && (
               <p className="mt-1 text-xs font-medium text-red-600">
@@ -171,11 +171,11 @@ export function QuoteForm({
               data-testid="new-quote-input-monthly-consumption-kwh"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.monthlyConsumptionKwh
-                  ? "border-red-500 ring-1 ring-red-500"
-                  : "border-gray-300"
+                  ? 'border-red-500 ring-1 ring-red-500'
+                  : 'border-gray-300'
               }`}
               placeholder="350"
-              {...register("monthlyConsumptionKwh", { valueAsNumber: true })}
+              {...register('monthlyConsumptionKwh', { valueAsNumber: true })}
             />
             {errors.monthlyConsumptionKwh && (
               <p className="mt-1 text-xs font-medium text-red-600">
@@ -193,11 +193,11 @@ export function QuoteForm({
               data-testid="new-quote-input-system-size-kw"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.systemSizeKw
-                  ? "border-red-500 ring-1 ring-red-500"
-                  : "border-gray-300"
+                  ? 'border-red-500 ring-1 ring-red-500'
+                  : 'border-gray-300'
               }`}
               placeholder="2000"
-              {...register("systemSizeKw", { valueAsNumber: true })}
+              {...register('systemSizeKw', { valueAsNumber: true })}
             />
             {errors.systemSizeKw && (
               <p className="mt-1 text-xs font-medium text-red-600">
@@ -215,11 +215,11 @@ export function QuoteForm({
               data-testid="new-quote-input-down-payment"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.downPayment
-                  ? "border-red-500 ring-1 ring-red-500"
-                  : "border-gray-300"
+                  ? 'border-red-500 ring-1 ring-red-500'
+                  : 'border-gray-300'
               }`}
               placeholder="2000"
-              {...register("downPayment", { valueAsNumber: true })}
+              {...register('downPayment', { valueAsNumber: true })}
             />
             {errors.downPayment && (
               <p className="mt-1 text-xs font-medium text-red-600">

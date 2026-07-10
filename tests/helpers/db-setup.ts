@@ -1,15 +1,15 @@
-import { test } from "@playwright/test";
-import { PrismaClient } from "../../src/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { test } from '@playwright/test';
+import { PrismaClient } from '../../src/generated/prisma/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 const adapter = new PrismaBetterSqlite3({
-  url: "file:./prisma/dev.db",
+  url: 'file:./prisma/dev.db',
 });
 
 export const prisma = new PrismaClient({ adapter });
 
 /**
- * Automatically registers beforeAll and afterAll hooks 
+ * Automatically registers beforeAll and afterAll hooks
  * to wipe test users from the local SQLite database.
  */
 export function useDatabaseTestCleanup(testEmail: string) {
@@ -19,7 +19,7 @@ export function useDatabaseTestCleanup(testEmail: string) {
         where: { email: testEmail },
       });
     } catch (error) {
-      console.error("Error during beforeAll database cleanup:", error);
+      console.error('Error during beforeAll database cleanup:', error);
     } finally {
       await prisma.$disconnect();
     }
@@ -31,7 +31,7 @@ export function useDatabaseTestCleanup(testEmail: string) {
         where: { email: testEmail },
       });
     } catch (error) {
-      console.error("Error during afterAll database cleanup:", error);
+      console.error('Error during afterAll database cleanup:', error);
     } finally {
       await prisma.$disconnect();
     }

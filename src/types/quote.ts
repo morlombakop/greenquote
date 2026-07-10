@@ -1,9 +1,9 @@
 export type QuoteUser = {
   name: string | null;
   email: string | null;
-}
+};
 
-export type  Quote = {
+export type Quote = {
   id: string;
   fullName: string;
   email: string;
@@ -13,4 +13,4 @@ export type  Quote = {
   riskBand: string;
   createdAt: Date | string;
   user: QuoteUser;
-}
+};

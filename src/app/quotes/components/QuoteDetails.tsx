@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { InstallmentOffer, PdfQuoteData } from "@/lib/utils/types";
-import { generateQuotePdf } from "@/lib/utils/quotePdfUtils";
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { InstallmentOffer, PdfQuoteData } from '@/lib/utils/types';
+import { generateQuotePdf } from '@/lib/utils/quotePdfUtils';
 
 type QuoteResultsClientProps = {
   quote: PdfQuoteData;
@@ -25,7 +25,7 @@ export default function QuoteResultsClient({
       await new Promise((resolve) => setTimeout(resolve, 50));
       generateQuotePdf(quote, parsedOffers);
     } catch (err) {
-      console.error("Failed to compile PDF download stream:", err);
+      console.error('Failed to compile PDF download stream:', err);
     } finally {
       setIsGenerating(false);
     }
@@ -37,7 +37,7 @@ export default function QuoteResultsClient({
         {/* Navigation Breadcrumb & Actions Bar */}
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <Link
-            href={userRole === "ADMIN" ? "/admin/quotes" : "/quotes"}
+            href={userRole === 'ADMIN' ? '/admin/quotes' : '/quotes'}
             className="inline-flex items-center text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
           >
             ← Back to Pipeline Dashboard
@@ -49,16 +49,16 @@ export default function QuoteResultsClient({
               disabled={isGenerating || parsedOffers.length === 0}
               className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {isGenerating ? "Compiling PDF..." : "↓ Export Document PDF"}
+              {isGenerating ? 'Compiling PDF...' : '↓ Export Document PDF'}
             </button>
 
             <span
               className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
-                quote.riskBand === "A"
-                  ? "bg-green-100 text-green-800"
-                  : quote.riskBand === "B"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-red-100 text-red-800"
+                quote.riskBand === 'A'
+                  ? 'bg-green-100 text-green-800'
+                  : quote.riskBand === 'B'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-red-100 text-red-800'
               }`}
             >
               Credit Risk Band: {quote.riskBand}
@@ -106,7 +106,7 @@ export default function QuoteResultsClient({
                   Gross Price
                 </span>
                 <span className="text-lg font-bold text-gray-900">
-                  €{quote.systemPrice.toLocaleString("de-DE")}
+                  €{quote.systemPrice.toLocaleString('de-DE')}
                 </span>
               </div>
               <div>
@@ -114,7 +114,7 @@ export default function QuoteResultsClient({
                   Financing Principal
                 </span>
                 <span className="text-lg font-bold text-green-600">
-                  €{quote.principalAmount.toLocaleString("de-DE")}
+                  €{quote.principalAmount.toLocaleString('de-DE')}
                 </span>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function QuoteResultsClient({
                     </span>
                     <span className="text-3xl font-black text-gray-900 tracking-tight">
                       €
-                      {offer.monthlyPayment.toLocaleString("de-DE", {
+                      {offer.monthlyPayment.toLocaleString('de-DE', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -169,7 +169,7 @@ export default function QuoteResultsClient({
                     <div className="flex justify-between">
                       <span>Principal Used:</span>
                       <span className="font-semibold text-gray-900">
-                        €{offer.principalUsed.toLocaleString("de-DE")}
+                        €{offer.principalUsed.toLocaleString('de-DE')}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -180,7 +180,7 @@ export default function QuoteResultsClient({
                           offer.monthlyPayment *
                           offer.termYears *
                           12
-                        ).toLocaleString("de-DE", {
+                        ).toLocaleString('de-DE', {
                           maximumFractionDigits: 2,
                         })}
                       </span>

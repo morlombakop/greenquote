@@ -1,6 +1,6 @@
-import React from "react";
-import SwaggerUIClient from "./SwaggerUIClient";
-import { openApiSpec } from "./openapi-spec";
+import React from 'react';
+import SwaggerUIClient from './SwaggerUIClient';
+import { openApiSpec } from './openapi-spec';
 
 export default function ApiDocsPage() {
   return (

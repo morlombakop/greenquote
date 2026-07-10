@@ -3,22 +3,22 @@ export type InstallmentOffer = {
   apr: number;
   principalUsed: number;
   monthlyPayment: number;
-}
+};
 
-export type RiskBand = "A" | "B" | "C";
+export type RiskBand = 'A' | 'B' | 'C';
 
 export type CalculatedQuoteSummary = {
   systemPrice: number;
   principalAmount: number;
   riskBand: RiskBand;
   offers: InstallmentOffer[];
-}
+};
 
 export type CalculateQuoteInput = {
   systemSizeKw: number;
   downPayment: number;
   monthlyConsumptionKwh: number;
-}
+};
 
 export type PdfQuoteData = {
   id: string;

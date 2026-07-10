@@ -1,17 +1,17 @@
-import { QuoteForm } from "@/app/quotes/components/QuoteForm";
-import { prisma } from "@/lib/prisma";
-import { type QuoteInput } from "@/lib/validations/quote";
-import { getServerSession } from "next-auth";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import React from "react";
-import { authOptions } from "../../api/auth/[...nextauth]/route";
+import { QuoteForm } from '@/app/quotes/components/QuoteForm';
+import { prisma } from '@/lib/prisma';
+import { type QuoteInput } from '@/lib/validations/quote';
+import { getServerSession } from 'next-auth';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import React from 'react';
+import { authOptions } from '../../api/auth/[...nextauth]/route';
 
 export default async function NewQuotePage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user.id) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const user = await prisma.user.findUniqueOrThrow({
@@ -21,7 +21,7 @@ export default async function NewQuotePage() {
   const initialData: QuoteInput = {
     fullName: user.name,
     email: user.email,
-    address: "",
+    address: '',
     monthlyConsumptionKwh: 0,
     downPayment: 0,
     systemSizeKw: 0,
@@ -41,7 +41,10 @@ export default async function NewQuotePage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-            <h1 className="text-xl font-bold text-gray-900" data-testid="new-quote-header">
+            <h1
+              className="text-xl font-bold text-gray-900"
+              data-testid="new-quote-header"
+            >
               Configure New Solar Evaluation File
             </h1>
             <p className="text-xs text-gray-500 mt-1">

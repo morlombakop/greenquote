@@ -1,14 +1,15 @@
 import pino, { LoggerOptions, Logger } from 'pino';
 
 // 1. Detect the runtime environment
-const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+const isBrowser =
+  typeof window !== 'undefined' && typeof window.document !== 'undefined';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // 2. Define base configuration
 const config: LoggerOptions = {
   level: process.env.NEXT_PUBLIC_LOG_LEVEL || process.env.LOG_LEVEL || 'info',
   // Basic security scrubbing
-  redact: ['password', 'secret', 'token', 'creditCard'], 
+  redact: ['password', 'secret', 'token', 'creditCard'],
 };
 
 // 3. Apply Node-specific or Browser-specific configurations

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { logger } from "@/lib/logger";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { loginSchema, type LoginInput } from "./validation";
+import { logger } from '@/lib/logger';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { loginSchema, type LoginInput } from './validation';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const showSuccessToast = searchParams.get("registered") === "true";
+  const showSuccessToast = searchParams.get('registered') === 'true';
 
   const {
     register,
@@ -24,8 +24,8 @@ export default function LoginPage() {
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -34,11 +34,11 @@ export default function LoginPage() {
     setServerError(null);
     logger.info(
       { email: values.email },
-      "Initiating client login session attempt.",
+      'Initiating client login session attempt.'
     );
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         redirect: false,
         email: values.email,
         password: values.password,
@@ -46,28 +46,28 @@ export default function LoginPage() {
 
       if (!result || result.error) {
         const failureReason =
-          result?.error || "Invalid credential verification mapping";
-        setServerError("Invalid email or password combination.");
+          result?.error || 'Invalid credential verification mapping';
+        setServerError('Invalid email or password combination.');
 
         logger.warn(
           {
             email: values.email,
             reason: failureReason,
           },
-          "Authentication credentials rejected by authorization engine.",
+          'Authentication credentials rejected by authorization engine.'
         );
         return;
       }
 
       logger.info(
         { email: values.email },
-        "Authentication verified successfully. Redirecting user.",
+        'Authentication verified successfully. Redirecting user.'
       );
 
-      router.push("/quotes");
+      router.push('/quotes');
       router.refresh();
     } catch (err) {
-      setServerError("An unexpected error occurred during processing.");
+      setServerError('An unexpected error occurred during processing.');
 
       if (err instanceof Error) {
         logger.error(
@@ -76,7 +76,7 @@ export default function LoginPage() {
             errorMessage: err.message,
             errorStack: err.stack,
           },
-          "Login form execution lifecycle crashed.",
+          'Login form execution lifecycle crashed.'
         );
       }
     } finally {
@@ -96,7 +96,11 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form
+          className="mt-8 space-y-6"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+        >
           {showSuccessToast && (
             <div className="rounded-md bg-green-50 p-4 border border-green-200">
               <p className="text-sm font-medium text-green-800">
@@ -121,11 +125,11 @@ export default function LoginPage() {
                 data-testid="login-input-email"
                 className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.email
-                    ? "border-red-500 ring-1 ring-red-500"
-                    : "border-gray-300"
+                    ? 'border-red-500 ring-1 ring-red-500'
+                    : 'border-gray-300'
                 }`}
                 placeholder="admin@test.com"
-                {...register("email")}
+                {...register('email')}
               />
               {errors.email && (
                 <p className="mt-1 text-xs font-medium text-red-600">
@@ -143,11 +147,11 @@ export default function LoginPage() {
                 data-testid="login-input-password"
                 className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                   errors.password
-                    ? "border-red-500 ring-1 ring-red-500"
-                    : "border-gray-300"
+                    ? 'border-red-500 ring-1 ring-red-500'
+                    : 'border-gray-300'
                 }`}
                 placeholder="••••••••"
-                {...register("password")}
+                {...register('password')}
               />
               {errors.password && (
                 <p className="mt-1 text-xs font-medium text-red-600">
@@ -164,7 +168,7 @@ export default function LoginPage() {
               disabled={isLoading}
               className="group relative flex w-full justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 transition-colors shadow-sm"
             >
-              {isLoading ? "Signing In..." : "Sign In"}
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </button>
           </div>
 

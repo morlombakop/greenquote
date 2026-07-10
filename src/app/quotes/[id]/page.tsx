@@ -1,13 +1,13 @@
-import QuoteDetails from "@/app/quotes/components/QuoteDetails";
-import logger from "@/lib/logger";
-import { prisma } from "@/lib/prisma";
-import { type InstallmentOffer } from "@/lib/utils/types";
-import { getServerSession } from "next-auth";
-import { notFound, redirect } from "next/navigation";
-import React from "react";
-import { authOptions } from "../../api/auth/[...nextauth]/route";
+import QuoteDetails from '@/app/quotes/components/QuoteDetails';
+import logger from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
+import { type InstallmentOffer } from '@/lib/utils/types';
+import { getServerSession } from 'next-auth';
+import { notFound, redirect } from 'next/navigation';
+import React from 'react';
+import { authOptions } from '../../api/auth/[...nextauth]/route';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export default async function QuoteResultsPage({
   params,
@@ -17,7 +17,7 @@ export default async function QuoteResultsPage({
   // Enforce Authentication Guard
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect("/login");
+    redirect('/login');
   }
 
   const resolvedParams = await params;
@@ -38,18 +38,18 @@ export default async function QuoteResultsPage({
   }
 
   // Authorization Guard: Validate Ownership
-  if (quote.userId !== session.user.id && session.user.role !== "ADMIN") {
-    redirect("/quotes");
+  if (quote.userId !== session.user.id && session.user.role !== 'ADMIN') {
+    redirect('/quotes');
   }
 
   let parsedOffers: InstallmentOffer[] = [];
   try {
     parsedOffers =
-      typeof quote.offers === "string"
+      typeof quote.offers === 'string'
         ? JSON.parse(quote.offers)
         : (quote.offers as unknown as InstallmentOffer[]);
   } catch (err) {
-    logger.error(err, "Failed parsing offers payload structure:");
+    logger.error(err, 'Failed parsing offers payload structure:');
   }
 
   return (

@@ -1,13 +1,15 @@
-"use client";
+'use client';
 
-import { logger } from "@/lib/logger";
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { registrationSchema, type RegistrationInput } from "@/lib/validations/registration";
-
+import { logger } from '@/lib/logger';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import {
+  registrationSchema,
+  type RegistrationInput,
+} from '@/lib/validations/registration';
 
 export function RegisterForm() {
   const router = useRouter();
@@ -21,10 +23,10 @@ export function RegisterForm() {
   } = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      fullName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -33,23 +35,23 @@ export function RegisterForm() {
     setServerError(null);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: values.fullName,
           email: values.email,
           password: values.password,
-          confirmPassword: values.confirmPassword
+          confirmPassword: values.confirmPassword,
         }),
       });
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error || "An unexpected error occurred.");
+        throw new Error(data.error || 'An unexpected error occurred.');
       }
 
-      router.push("/login?registered=true");
+      router.push('/login?registered=true');
     } catch (err) {
       if (err instanceof Error) {
         setServerError(err.message);
@@ -60,7 +62,7 @@ export function RegisterForm() {
             errorMessage: err.message,
             errorStack: err.stack,
           },
-          "Registration form execution failure intercepted.",
+          'Registration form execution failure intercepted.'
         );
       }
     } finally {
@@ -69,7 +71,11 @@ export function RegisterForm() {
   };
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
+    <form
+      className="mt-8 space-y-6"
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+    >
       {serverError && (
         <div className="rounded-md bg-red-50 p-4 border border-red-200">
           <p className="text-sm font-medium text-red-800">{serverError}</p>
@@ -87,11 +93,11 @@ export function RegisterForm() {
             data-testid="register-input-full-name"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.fullName
-                ? "border-red-500 ring-1 ring-red-500"
-                : "border-gray-300"
+                ? 'border-red-500 ring-1 ring-red-500'
+                : 'border-gray-300'
             }`}
             placeholder="Jane Doe"
-            {...register("fullName")}
+            {...register('fullName')}
           />
           {errors.fullName && (
             <p className="mt-1 text-xs font-medium text-red-600">
@@ -110,11 +116,11 @@ export function RegisterForm() {
             data-testid="register-input-email"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.email
-                ? "border-red-500 ring-1 ring-red-500"
-                : "border-gray-300"
+                ? 'border-red-500 ring-1 ring-red-500'
+                : 'border-gray-300'
             }`}
             placeholder="example@domain.com"
-            {...register("email")}
+            {...register('email')}
           />
           {errors.email && (
             <p className="mt-1 text-xs font-medium text-red-600">
@@ -133,11 +139,11 @@ export function RegisterForm() {
             data-testid="register-input-password"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.password
-                ? "border-red-500 ring-1 ring-red-500"
-                : "border-gray-300"
+                ? 'border-red-500 ring-1 ring-red-500'
+                : 'border-gray-300'
             }`}
             placeholder="••••••••"
-            {...register("password")}
+            {...register('password')}
           />
           {errors.password && (
             <p className="mt-1 text-xs font-medium text-red-600">
@@ -153,14 +159,14 @@ export function RegisterForm() {
           </label>
           <input
             type="password"
-             data-testid="register-input-confirm-password"
+            data-testid="register-input-confirm-password"
             className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:ring-green-500 focus:border-green-500 ${
               errors.confirmPassword
-                ? "border-red-500 ring-1 ring-red-500"
-                : "border-gray-300"
+                ? 'border-red-500 ring-1 ring-red-500'
+                : 'border-gray-300'
             }`}
             placeholder="••••••••"
-            {...register("confirmPassword")}
+            {...register('confirmPassword')}
           />
           {errors.confirmPassword && (
             <p className="mt-1 text-xs font-medium text-red-600">
@@ -176,7 +182,7 @@ export function RegisterForm() {
         disabled={isLoading}
         className="w-full py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-colors shadow-sm"
       >
-        {isLoading ? "Creating Account..." : "Register"}
+        {isLoading ? 'Creating Account...' : 'Register'}
       </button>
 
       <div className="text-center text-sm">

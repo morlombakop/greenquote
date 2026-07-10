@@ -1,31 +1,32 @@
-import React from "react";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import FilterBlock from "./components/FilterBlock";
-import KpiStats from "./components/KpiStats";
+import { prisma } from '@/lib/prisma';
+import { getServerSession } from 'next-auth';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import React from 'react';
+import { authOptions } from '../../api/auth/[...nextauth]/route';
+import FilterBlock from './components/FilterBlock';
+import KpiStats from './components/KpiStats';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 type PageProps = {
   searchParams: Promise<{
     search?: string;
     userId?: string;
   }>;
-}
+};
 
 export default async function AdminDashboardPage({ searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
 
-  if (!session || session.user.role !== "ADMIN") {
-    redirect("/quotes");
+  if (!session || session.user.role !== 'ADMIN') {
+    redirect('/quotes');
   }
 
   // Resolve search parameters for server-side filtering
   const params = await searchParams;
-  const searchQuery = params.search || "";
-  const selectedUserId = params.userId || "";
+  const searchQuery = params.search || '';
+  const selectedUserId = params.userId || '';
 
   const uniqueUsers = await prisma.user.findMany({
     where: {
@@ -38,7 +39,7 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
       name: true,
       email: true,
     },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
   });
 
   // Build dynamic Prisma query filters based on active search parameters
@@ -60,7 +61,7 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
 
   const quotes = await prisma.quote.findMany({
     where: whereClause,
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
     include: {
       user: {
         select: {
@@ -74,11 +75,14 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
   // Mathematical summary reductions for KPI stats cards
   const totalVolume = quotes.length;
   const totalPipelineValue = quotes.reduce((acc, q) => acc + q.systemPrice, 0);
-  const totalFinancedValue = quotes.reduce((acc, q) => acc + q.principalAmount, 0);
+  const totalFinancedValue = quotes.reduce(
+    (acc, q) => acc + q.principalAmount,
+    0
+  );
 
- const riskDistribution = quotes.reduce(
+  const riskDistribution = quotes.reduce(
     (acc, q) => {
-      if (q.riskBand === "A" || q.riskBand === "B" || q.riskBand === "C") {
+      if (q.riskBand === 'A' || q.riskBand === 'B' || q.riskBand === 'C') {
         acc[q.riskBand] = (acc[q.riskBand] || 0) + 1;
       }
       return acc;
@@ -96,15 +100,16 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
               Admin Control Center
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Global system monitoring, credit risks metrics, and generated quote infrastructure audits.
+              Global system monitoring, credit risks metrics, and generated
+              quote infrastructure audits.
             </p>
           </div>
-          <a
+          <Link
             href="/api/auth/signout"
             className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm"
           >
             Sign Out
-          </a>
+          </Link>
         </div>
 
         <KpiStats
@@ -159,19 +164,30 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200 text-sm">
                   {quotes.map((quote) => (
-                    <tr key={quote.id} className="hover:bg-gray-50 transition-colors">
+                    <tr
+                      key={quote.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-semibold text-gray-900">{quote.user.name}</div>
-                        <div className="text-xs text-gray-500">{quote.user.email}</div>
+                        <div className="font-semibold text-gray-900">
+                          {quote.user.name}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {quote.user.email}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-gray-900 font-medium">{quote.fullName}</div>
-                        <div className="text-xs text-gray-500">{quote.email}</div>
+                        <div className="text-gray-900 font-medium">
+                          {quote.fullName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {quote.email}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
                         <span className="font-semibold text-gray-900">
                           {quote.systemSizeKw.toFixed(1)} kWp
-                        </span>{" "}
+                        </span>{' '}
                         array size
                         <div className="text-gray-500">
                           {quote.monthlyConsumptionKwh} kWh / month demand
@@ -179,18 +195,18 @@ export default async function AdminDashboardPage({ searchParams }: PageProps) {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                         €
-                        {quote.principalAmount.toLocaleString("de-DE", {
+                        {quote.principalAmount.toLocaleString('de-DE', {
                           minimumFractionDigits: 2,
                         })}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            quote.riskBand === "A"
-                              ? "bg-green-100 text-green-800"
-                              : quote.riskBand === "B"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
+                            quote.riskBand === 'A'
+                              ? 'bg-green-100 text-green-800'
+                              : quote.riskBand === 'B'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
                           }`}
                         >
                           Risk Band {quote.riskBand}

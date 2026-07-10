@@ -1,10 +1,10 @@
-import React from "react";
-import { RegisterForm } from "@/app/register/components/RegisterForm";
+import React from 'react';
+import { RegisterForm } from '@/app/register/components/RegisterForm';
 
 export const metadata = {
-  title: "Create an Account | GreenQuote",
+  title: 'Create an Account | GreenQuote',
   description:
-    "Get started with your custom solar layout quote evaluation pipeline.",
+    'Get started with your custom solar layout quote evaluation pipeline.',
 };
 
 export default function RegisterPage() {

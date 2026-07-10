@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import React, { startTransition } from "react";
-import { useRouter } from "next/navigation";
+import React, { startTransition } from 'react';
+import { useRouter } from 'next/navigation';
 
 type UserOption = {
   id: string;
@@ -25,12 +25,12 @@ export default function FilterBlock({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const search = formData.get("search") as string;
-    const userId = formData.get("userId") as string;
+    const search = formData.get('search') as string;
+    const userId = formData.get('userId') as string;
 
     const params = new URLSearchParams();
-    if (search) params.set("search", search);
-    if (userId) params.set("userId", userId);
+    if (search) params.set('search', search);
+    if (userId) params.set('userId', userId);
 
     // Using startTransition allows Next.js to update the URL smoothly without full page flickering
     startTransition(() => {
@@ -40,7 +40,7 @@ export default function FilterBlock({
 
   const handleClear = () => {
     startTransition(() => {
-      router.push("/admin/quotes");
+      router.push('/admin/quotes');
     });
   };
 

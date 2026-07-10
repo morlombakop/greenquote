@@ -1,4 +1,5 @@
 # ⚒️ Techologies Used
+
 - Next.js as the main development framework.
 - Postgres as a production database.
 - SQLite as a dev and test database
@@ -7,9 +8,9 @@
 - Vitest for unit tests
 - Docker & docker-compose : For Virtualization.
 
-
 # 🚀 Up and run in 5 mins 🕙
-Ensure you have Node.js v22+ installed,  docker and docker-compose installed 
+
+Ensure you have Node.js v22+ installed, docker and docker-compose installed
 
 First, run the development server:
 

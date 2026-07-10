@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 type KpiStatsProps = {
   totalVolume: number;
@@ -30,7 +30,7 @@ export default function KpiStats({
         </p>
         <p className="mt-2 text-3xl font-bold text-gray-900">
           €
-          {totalPipelineValue.toLocaleString("de-DE", {
+          {totalPipelineValue.toLocaleString('de-DE', {
             maximumFractionDigits: 0,
           })}
         </p>
@@ -43,7 +43,7 @@ export default function KpiStats({
         </p>
         <p className="mt-2 text-3xl font-bold text-green-600">
           €
-          {totalFinancedValue.toLocaleString("de-DE", {
+          {totalFinancedValue.toLocaleString('de-DE', {
             maximumFractionDigits: 0,
           })}
         </p>
