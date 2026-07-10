@@ -96,7 +96,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
           {showSuccessToast && (
             <div className="rounded-md bg-green-50 p-4 border border-green-200">
               <p className="text-sm font-medium text-green-800">

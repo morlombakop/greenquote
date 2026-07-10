@@ -1,19 +1,18 @@
 "use client";
 
+import { calculateQuote } from "@/lib/utils/pricing";
 import { type QuoteInput, quoteSchema } from "@/lib/validations/quote";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { QuoteResults } from "./QuoteResult";
 
 type QuoteFormProps = {
   initialData: QuoteInput;
   submitButtonText?: string;
   submitButtonLoadingText?: string;
-}
-
-const SOLAR_IRRADIANCE_FACTOR = 1.2;
-const PRICE_PER_KW = 1500;
+};
 
 export function QuoteForm({
   initialData,
@@ -28,36 +27,36 @@ export function QuoteForm({
     register,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<QuoteInput>({
     resolver: zodResolver(quoteSchema),
     defaultValues: initialData,
   });
 
-  const monthlyConsumption =
+  const monthlyConsumptionKwh =
     useWatch({ control, name: "monthlyConsumptionKwh" }) || 0;
   const downPayment = useWatch({ control, name: "downPayment" }) || 0;
+  const systemSizeKw = useWatch({ control, name: "systemSizeKw" }) || 0;
 
-  const derivedSystemSizeKw =
-    ((monthlyConsumption * 12) / 1000) * SOLAR_IRRADIANCE_FACTOR;
-  const derivedSystemPrice = derivedSystemSizeKw * PRICE_PER_KW;
-  const derivedPrincipalAmount = Math.max(0, derivedSystemPrice - downPayment);
+  const quoteSummary = useMemo(() => {
+    return calculateQuote({ monthlyConsumptionKwh, downPayment, systemSizeKw });
+  }, [monthlyConsumptionKwh, downPayment, systemSizeKw]);
 
-    const handleCreateQuote = async (values: QuoteInput) => {
-      const response = await fetch("/api/quotes", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-  
-      const data = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to process quote configurations.");
-      }
-  
-      return data.quote.id;
-    };
+  const handleCreateQuote = async (values: QuoteInput) => {
+    const response = await fetch("/api/quotes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to process quote configurations.");
+    }
+
+    return data.quote.id;
+  };
 
   const handleFormSubmit = async (values: QuoteInput) => {
     setIsLoading(true);
@@ -75,7 +74,11 @@ export function QuoteForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+    <form
+      onSubmit={handleSubmit(handleFormSubmit)}
+      className="space-y-8"
+      noValidate
+    >
       {serverError && (
         <div className="rounded-md bg-red-50 p-4 border border-red-200">
           <p className="text-sm font-medium text-red-800">{serverError}</p>
@@ -95,6 +98,7 @@ export function QuoteForm({
             </label>
             <input
               type="text"
+              data-testid="new-quote-input-full-name"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.fullName
                   ? "border-red-500 ring-1 ring-red-500"
@@ -116,6 +120,7 @@ export function QuoteForm({
             </label>
             <input
               type="email"
+              data-testid="new-quote-input-email"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.email
                   ? "border-red-500 ring-1 ring-red-500"
@@ -137,6 +142,7 @@ export function QuoteForm({
             </label>
             <input
               type="text"
+              data-testid="new-quote-input-address"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.address
                   ? "border-red-500 ring-1 ring-red-500"
@@ -162,6 +168,7 @@ export function QuoteForm({
             </label>
             <input
               type="number"
+              data-testid="new-quote-input-monthly-consumption-kwh"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.monthlyConsumptionKwh
                   ? "border-red-500 ring-1 ring-red-500"
@@ -183,6 +190,7 @@ export function QuoteForm({
             </label>
             <input
               type="number"
+              data-testid="new-quote-input-system-size-kw"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.systemSizeKw
                   ? "border-red-500 ring-1 ring-red-500"
@@ -204,6 +212,7 @@ export function QuoteForm({
             </label>
             <input
               type="number"
+              data-testid="new-quote-input-down-payment"
               className={`block w-full px-3 py-2 border rounded-md text-gray-900 sm:text-sm focus:outline-none focus:ring-green-500 focus:border-green-500 ${
                 errors.downPayment
                   ? "border-red-500 ring-1 ring-red-500"
@@ -226,39 +235,19 @@ export function QuoteForm({
             <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">
               Live Estimates
             </h3>
-            <div className="space-y-4 text-sm">
-              <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                <span className="text-gray-600">Calculated Size:</span>
-                <span className="font-bold text-gray-900">
-                  {derivedSystemSizeKw.toFixed(2)} kWp
-                </span>
+            {isValid ? (
+              <QuoteResults summary={quoteSummary} />
+            ) : (
+              <div className="mt-8 text-center text-sm text-gray-400 italic">
+                No summary Available.
               </div>
-              <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                <span className="text-gray-600">Base Pricing:</span>
-                <span className="font-bold text-gray-900">
-                  €
-                  {derivedSystemPrice.toLocaleString("de-DE", {
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
-              </div>
-              <div className="flex justify-between items-center pt-2">
-                <span className="text-gray-600 font-medium">
-                  Financing Principal:
-                </span>
-                <span className="font-black text-green-600 text-xl tracking-tight">
-                  €
-                  {derivedPrincipalAmount.toLocaleString("de-DE", {
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="mt-8">
             <button
               type="submit"
+              data-testid="new-quote-input-submit"
               disabled={isLoading}
               className="w-full py-2.5 px-4 text-sm font-semibold rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 transition-colors shadow-sm"
             >

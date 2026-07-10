@@ -29,7 +29,7 @@ export default async function NewQuotePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <div className="mb-6">
           <Link
             href="/quotes"
@@ -41,7 +41,7 @@ export default async function NewQuotePage() {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           <div className="border-b border-gray-200 bg-gray-50 px-6 py-4">
-            <h1 className="text-xl font-bold text-gray-900">
+            <h1 className="text-xl font-bold text-gray-900" data-testid="new-quote-header">
               Configure New Solar Evaluation File
             </h1>
             <p className="text-xs text-gray-500 mt-1">

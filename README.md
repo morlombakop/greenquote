@@ -20,10 +20,16 @@ First, run the development server:
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+# Available Route
+
+- `/login`
+- `/Register`
+- `/quotes`
+- `/quotes/new`
+- `/admin/quotes`
 
 # Area of improvement
 
 - Improve logging on the client side
 - Used next-swagger-doc for API documentation
 - Download PDF as Quote
-

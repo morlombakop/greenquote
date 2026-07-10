@@ -1,15 +1,16 @@
-import { QuoteInput } from "../validations/quote";
 import type {
   CalculatedQuoteSummary,
   InstallmentOffer,
   RiskBand,
+  CalculateQuoteInput
 } from "./types";
+
 
 /**
  * Calculates system pricing, evaluates risk bands, and generates standard
  * amortization schedules for residential solar finance applications.
  */
-export function calculateQuote(input: QuoteInput): CalculatedQuoteSummary {
+export function calculateQuote(input: CalculateQuoteInput): CalculatedQuoteSummary {
   // 1. System price: systemSizeKw * 1200 (Sticking to Euros)
   const systemPrice = Number(input.systemSizeKw) * 1200;
   const systemSizeKw = Number(input.systemSizeKw);

@@ -69,7 +69,7 @@ export function RegisterForm() {
   };
 
   return (
-    <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+    <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)} noValidate>
       {serverError && (
         <div className="rounded-md bg-red-50 p-4 border border-red-200">
           <p className="text-sm font-medium text-red-800">{serverError}</p>

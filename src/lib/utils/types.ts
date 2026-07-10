@@ -7,25 +7,15 @@ export type InstallmentOffer = {
 
 export type RiskBand = "A" | "B" | "C";
 
-export type Quote = {
-  id: string;
-  userId: string;
-  fullName: string;
-  email: string;
-  address: string;
-  monthlyConsumptionKwh: number;
-  systemSizeKw: number;
-  downPayment: number;
-  systemPrice: number;
-  principalAmount: number;
-  riskBand: string;
-  offers: RiskBand;
-  createdAt: Date; 
-};
-
 export type CalculatedQuoteSummary = {
   systemPrice: number;
   principalAmount: number;
   riskBand: RiskBand;
   offers: InstallmentOffer[];
+}
+
+export type CalculateQuoteInput = {
+  systemSizeKw: number;
+  downPayment: number;
+  monthlyConsumptionKwh: number;
 }
