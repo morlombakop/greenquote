@@ -19,3 +19,16 @@ export type CalculateQuoteInput = {
   downPayment: number;
   monthlyConsumptionKwh: number;
 }
+
+export type PdfQuoteData = {
+  id: string;
+  riskBand: string;
+  fullName: string;
+  email: string;
+  address: string;
+  systemSizeKw: number;
+  monthlyConsumptionKwh: number;
+  systemPrice: number;
+  principalAmount: number;
+  createdAt?: string | Date;
+};

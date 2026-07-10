@@ -14,7 +14,7 @@ export default async function QuoteResultsPage({
 }: {
   params: Promise<{ id: string }> | { id: string };
 }) {
-  // 1. Enforce Authentication Guard
+  // Enforce Authentication Guard
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/login");
@@ -23,7 +23,7 @@ export default async function QuoteResultsPage({
   const resolvedParams = await params;
   const { id } = resolvedParams;
 
-  // 2. Fetch specific Quote along with consumer context
+  // Fetch specific Quote along with consumer context
   const quote = await prisma.quote.findUnique({
     where: { id: id },
     include: {
@@ -37,12 +37,11 @@ export default async function QuoteResultsPage({
     notFound();
   }
 
-  // 3. Authorization Guard: Validate Ownership
+  // Authorization Guard: Validate Ownership
   if (quote.userId !== session.user.id && session.user.role !== "ADMIN") {
     redirect("/quotes");
   }
 
-  // 4. Safe JSON Deserialization for Generated Offers
   let parsedOffers: InstallmentOffer[] = [];
   try {
     parsedOffers =
