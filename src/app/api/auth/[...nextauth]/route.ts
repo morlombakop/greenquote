@@ -5,10 +5,14 @@ import { compare } from 'bcrypt';
 import { logger } from '@/lib/logger'; // Mapped to your structured logger engine
 import { type Role } from '@/types/next-auth';
 
+const DEFAULT_SESSION_MAX_AGE = 30 * 24 * 60 * 60; // 30 Days fallback
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 Days session lifecycle
+    maxAge: process.env.NEXTAUTH_SESSION_MAX_AGE
+      ? parseInt(process.env.NEXTAUTH_SESSION_MAX_AGE, 10)
+      : DEFAULT_SESSION_MAX_AGE,
   },
   providers: [
     CredentialsProvider({

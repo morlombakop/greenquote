@@ -5,10 +5,13 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   test: {
-    globals: true, // Enables 'describe', 'test', 'expect' without explicit imports
-    environment: 'jsdom', // Simulates a browser environment for React testing
+    // Enables 'describe', 'test', 'expect' without explicit imports
+    globals: true,
+    // Simulates a browser environment for React testing
+    environment: 'jsdom',
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    exclude: ['**/node_modules/**', '**/e2e/**', '**/*.e2e.spec.ts'],
   },
 });
