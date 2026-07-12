@@ -10,12 +10,10 @@ const globalForPrisma = globalThis as unknown as {
 let prismaInstance: PrismaClient;
 
 if (process.env.NODE_ENV === 'production') {
-  // 1. Production Mode: Postgres Pool Adapter
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL || '' });
   const adapter = new PrismaPg(pool);
   prismaInstance = new PrismaClient({ adapter });
 } else {
-  // 2. Local Dev & Test Mode: Pass the string path object directly into the adapter
   const adapter = new PrismaBetterSqlite3({
     url: 'file:./prisma/dev.db',
   });

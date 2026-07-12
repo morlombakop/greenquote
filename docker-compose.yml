@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # --- Database Service ---
+  db:
+    image: postgres:15-alpine
+    container_name: greenquote-db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin_password
+      POSTGRES_DB: greenquote
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d greenquote"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: greenquote-keycloak
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin_password
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/greenquote
+      KC_DB_USERNAME: cloover_code
+      KC_DB_PASSWORD: cloover@code.challenge
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # --- Next.js Fullstack Application ---
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: greenquote-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://admin:admin_password@db:5432/greenquote?schema=public
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=clover_green_quote_highly_secure_random_key
+      - NEXTAUTH_SESSION_MAX_AGE=2592000
+      # Keycloak variables (uncomment when NextAuth configuration is updated to use KeycloakProvider)
+      # - KEYCLOAK_CLIENT_ID=greenquote-app
+      # - KEYCLOAK_CLIENT_SECRET=your_client_secret
+      # - KEYCLOAK_ISSUER=http://localhost:8080/realms/master
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

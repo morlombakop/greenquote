@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prebuild:check": "prisma validate && tsc --noEmit && next-lint",
     "test:e2e": "npx playwright test",
     "build": "cross-env NODE_ENV=production prisma generate && next build",
     "db:migrate:dev": "cross-env NODE_ENV=development prisma migrate dev --name init",

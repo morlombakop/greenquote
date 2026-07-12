@@ -6,10 +6,11 @@ import { logger } from '@/lib/logger';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const timestamp = new Date().toISOString();
-  const quoteId = params.id;
+  const param = await params;
+  const quoteId = param.id;
 
   try {
     // Extract the encrypted user context right from the cookies server-side
@@ -33,7 +34,7 @@ export async function GET(
     const currentUserRole = session.user.role;
 
     const quote = await prisma.quote.findUnique({
-      where: { id: params.id },
+      where: { id: quoteId },
     });
 
     if (!quote) {
